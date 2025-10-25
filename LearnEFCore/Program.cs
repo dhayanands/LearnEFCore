@@ -3,12 +3,13 @@ using LearnEFCore.Infrastructure.Data;
 using LearnEFCore.Infrastructure.Repositories;
 using LearnEFCore.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load environment-specific configuration
 var environment = builder.Environment.EnvironmentName;
-builder.Configuration.AddJsonFile($"appsettings.{environment}.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -27,6 +28,9 @@ if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Ensure the database exists
+    EnsureDatabaseExists(builder.Configuration.GetConnectionString("DefaultConnection"));
 
     // Reset the database in development
     Console.WriteLine("Resetting database...");
@@ -57,3 +61,27 @@ app.MapControllers();
 app.MapGet("/", () => "Learning EF Core ;)");
 
 app.Run();
+
+void EnsureDatabaseExists(string connectionString)
+{
+    var builder = new NpgsqlConnectionStringBuilder(connectionString);
+    var databaseName = builder.Database;
+
+    // Connect to the default "postgres" database to check for the target database
+    builder.Database = "postgres";
+
+    using var connection = new NpgsqlConnection(builder.ConnectionString);
+    connection.Open();
+
+    using var command = connection.CreateCommand();
+    command.CommandText = $"SELECT 1 FROM pg_database WHERE datname = '{databaseName}'";
+    var databaseExists = command.ExecuteScalar() != null;
+
+    if (!databaseExists)
+    {
+        Console.WriteLine($"Database '{databaseName}' does not exist. Creating...");
+        command.CommandText = $"CREATE DATABASE \"{databaseName}\"";
+        command.ExecuteNonQuery();
+        Console.WriteLine($"Database '{databaseName}' created successfully.");
+    }
+}
