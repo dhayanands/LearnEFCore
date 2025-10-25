@@ -1,0 +1,8 @@
+GET http://localhost:5201/
+###
+GET http://localhost:5201/quotes
+###
+GET http://localhost:5201/students
+###
+GET http://localhost:5201/student/1
+###

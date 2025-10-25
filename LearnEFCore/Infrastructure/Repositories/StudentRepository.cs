@@ -18,5 +18,10 @@ namespace LearnEFCore.Infrastructure.Repositories
         {
             return await _context.Students.ToListAsync();
         }
+
+        public async Task<Student?> GetStudentByIdAsync(int id)
+        {
+            return await _context.Students.FindAsync(id) ?? null;
+        }
     }
 }
