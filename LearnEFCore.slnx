@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="LearnEFCore.Tests/LearnEFCore.Tests.csproj" />
   <Project Path="LearnEFCore/LearnEFCore.csproj" />
 </Solution>

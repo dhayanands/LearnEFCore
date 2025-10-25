@@ -2,10 +2,18 @@ using LearnEFCore.Application.Interfaces;
 using LearnEFCore.Infrastructure.Data;
 using LearnEFCore.Infrastructure.Repositories;
 using LearnEFCore.Infrastructure.Services;
+using LearnEFCore.Infrastructure.Initialization;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+builder.Host.UseSerilog();
 
 // Load environment-specific configuration
 var environment = builder.Environment.EnvironmentName;
@@ -15,41 +23,38 @@ builder.Configuration.AddJsonFile($"appsettings.json", optional: false, reloadOn
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+ options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IQuoteService, QuoteService>();
+builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
 var app = builder.Build();
+
+// Validate configuration
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Database connection string 'DefaultConnection' is not configured.");
+}
 
 // Configure the HTTP request pipeline.
 
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+ using var scope = app.Services.CreateScope();
+ var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
 
-    // Ensure the database exists
-    EnsureDatabaseExists(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-    // Reset the database in development
-    Console.WriteLine("Resetting database...");
-    ctx.Database.EnsureDeleted();
-    ctx.Database.EnsureCreated();
-    Console.WriteLine("Database reset complete.");
-
-    // Seed the database with test data
-    DataSeeder.Seed(ctx);
+ // Ensure the database exists and reset it in development
+ await initializer.InitializeDevelopmentAsync(connectionString!);
 }
 else
 {
-    // Apply migrations in production
-    using var scope = app.Services.CreateScope();
-    var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+ using var scope = app.Services.CreateScope();
+ var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
 
-    Console.WriteLine("Applying migrations...");
-    ctx.Database.Migrate();
-    Console.WriteLine("Migrations applied.");
+ // Apply migrations in production
+ initializer.ApplyMigrations();
 }
 
 // app.UseHttpsRedirection();
@@ -61,27 +66,3 @@ app.MapControllers();
 app.MapGet("/", () => "Learning EF Core ;)");
 
 app.Run();
-
-void EnsureDatabaseExists(string connectionString)
-{
-    var builder = new NpgsqlConnectionStringBuilder(connectionString);
-    var databaseName = builder.Database;
-
-    // Connect to the default "postgres" database to check for the target database
-    builder.Database = "postgres";
-
-    using var connection = new NpgsqlConnection(builder.ConnectionString);
-    connection.Open();
-
-    using var command = connection.CreateCommand();
-    command.CommandText = $"SELECT 1 FROM pg_database WHERE datname = '{databaseName}'";
-    var databaseExists = command.ExecuteScalar() != null;
-
-    if (!databaseExists)
-    {
-        Console.WriteLine($"Database '{databaseName}' does not exist. Creating...");
-        command.CommandText = $"CREATE DATABASE \"{databaseName}\"";
-        command.ExecuteNonQuery();
-        Console.WriteLine($"Database '{databaseName}' created successfully.");
-    }
-}
