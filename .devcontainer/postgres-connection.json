@@ -1,0 +1,24 @@
+{    
+    "pgsql.connections": [
+        
+        {
+            "id": "4C8B56DD-1DE0-48EA-A50D-B231FA3DBAF2",
+            "groupId": "EEC3CC09-3A35-4F90-A26A-0568AA87E3A4",
+            "authenticationType": "SqlLogin",
+            "connectTimeout": 15,
+            "applicationName": "vscode-pgsql",
+            "clientEncoding": "utf8",
+            "sslmode": "disable",
+            "savePassword": true,
+            "server": "postgres",
+            "database": "playground",
+            "user": "postgres",
+            "password": "",
+            "sshPassword": "",
+            "profileName": "localhost, playground (postgres)",
+            "expiresOn": 0,
+            "profileSource": 0,
+            "displayName": "localhost, playground (postgres)"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "EF-Core Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-azuretools.vscode-containers",
+        "ms-dotnettools.vscodeintellicode-csharp",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-ossdata.vscode-pgsql"
+      ],
+      "settings": {
+        "postgres": {
+          "host": "postgres",
+          "port": 5432
+        }
+      }
+    }
+  },
+  "forwardPorts": [5432, 5207],
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  },
+  "postCreateCommand": "dotnet --version"
+}
