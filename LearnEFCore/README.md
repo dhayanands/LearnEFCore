@@ -8,9 +8,10 @@ This project demonstrates the use of **Entity Framework Core (EF Core)** with a 
 
 The project is organized into the following layers:
 
+- **Domain**: Contains entities and domain logic.
+- **Application**: Contains interfaces and application-specific logic.
 - **Features**: Contains feature-specific controllers, services, and repositories.
 - **Infrastructure**: Contains the database context, middleware, and shared utilities.
-- **Application**: Contains interfaces and application-specific logic.
 
 ---
 
@@ -18,7 +19,7 @@ The project is organized into the following layers:
 
 Ensure the following tools are installed and available on the `PATH`:
 
-- **.NET SDK**: Install the latest version from [dotnet.microsoft.com](https://dotnet.microsoft.com/).
+- **.NET SDK 10**: Install the latest version from [dotnet.microsoft.com](https://dotnet.microsoft.com/).
 - **PostgreSQL**: Install PostgreSQL and ensure the database server is running.
 - **EF Core CLI**: Install the EF Core tools globally:
 
@@ -98,14 +99,25 @@ Replace `<PreviousMigrationName>` with the name of the migration you want to rol
 2. Open the API in your browser:
 
    ```bash
-   "$BROWSER" http://localhost:5000
+   "$BROWSER" https://localhost:7075
    ```
 
 3. Test the available endpoints:
 
-   - Root endpoint: `http://localhost:5000/` (returns a welcome message)
-   - Quotes endpoint: `http://localhost:5000/quotes` (retrieves a random quote)
-   - Students endpoint: `http://localhost:5000/students` (retrieves all students)
+   - Root endpoint: `http://localhost:5201/` (returns 'Learning EF Core ;)')
+   - Quotes endpoint: `http://localhost:5201/quotes` (retrieves a random quote)
+   - Students endpoint: `http://localhost:5201/api/students` (retrieves all students)
+   - Courses endpoint: `http://localhost:5201/api/courses` (retrieves all courses)
+
+---
+
+## Running Tests
+
+Run the unit tests using:
+
+```bash
+dotnet test
+```
 
 ---
 
