@@ -8,10 +8,10 @@ This project demonstrates the use of **Entity Framework Core (EF Core)** with a 
 
 The project is organized into the following layers:
 
-- **Core**: Contains the domain entities and business logic.
+- **Domain**: Contains entities and domain logic.
 - **Application**: Contains interfaces and application-specific logic.
-- **Infrastructure**: Contains the database context and repository implementations.
-- **Presentation**: Contains the API controllers and user-facing components.
+- **Features**: Contains feature-specific controllers, services, and repositories.
+- **Infrastructure**: Contains the database context, middleware, and shared utilities.
 
 ---
 
@@ -19,7 +19,7 @@ The project is organized into the following layers:
 
 Ensure the following tools are installed and available on the `PATH`:
 
-- **.NET SDK**: Install the latest version from [dotnet.microsoft.com](https://dotnet.microsoft.com/).
+- **.NET SDK 10**: Install the latest version from [dotnet.microsoft.com](https://dotnet.microsoft.com/).
 - **PostgreSQL**: Install PostgreSQL and ensure the database server is running.
 - **EF Core CLI**: Install the EF Core tools globally:
 
@@ -62,7 +62,7 @@ Migrations in EF Core are used to manage changes to the database schema. Below a
 
 When you make changes to your entity classes or `DbContext`, create a new migration to capture those changes:
 
-```bash
+ ```bash
 dotnet ef migrations add <MigrationName>
 ```
 
@@ -99,14 +99,25 @@ Replace `<PreviousMigrationName>` with the name of the migration you want to rol
 2. Open the API in your browser:
 
    ```bash
-   "$BROWSER" http://localhost:5000
+   "$BROWSER" https://localhost:7075
    ```
 
 3. Test the available endpoints:
 
-   - Root endpoint: `http://localhost:5000/` (returns a welcome message)
-   - Quotes endpoint: `http://localhost:5000/quotes` (retrieves a random quote)
-   - Students endpoint: `http://localhost:5000/students` (retrieves all students)
+   - Root endpoint: `http://localhost:5201/` (returns 'Learning EF Core ;)')
+   - Quotes endpoint: `http://localhost:5201/quotes` (retrieves a random quote)
+   - Students endpoint: `http://localhost:5201/api/students` (retrieves all students)
+   - Courses endpoint: `http://localhost:5201/api/courses` (retrieves all courses)
+
+---
+
+## Running Tests
+
+Run the unit tests using:
+
+```bash
+dotnet test
+```
 
 ---
 
@@ -114,5 +125,3 @@ Replace `<PreviousMigrationName>` with the name of the migration you want to rol
 
 - The `AppDbContext` class is configured to use PostgreSQL via the `UseNpgsql` method.
 - Ensure the `Npgsql.EntityFrameworkCore.PostgreSQL` package is installed in the project.
-- When seeding data with `DateTime` values for columns mapped to PostgreSQL's 'timestamp with time zone' type, specify `DateTimeKind.Utc` to avoid serialization errors, as PostgreSQL requires UTC for this type.
-- Be aware that retrieving `DateTime` values from PostgreSQL might require conversion to the appropriate timezone in your application, depending on how the data will be used.
