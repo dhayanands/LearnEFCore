@@ -3,15 +3,54 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# User-specific files
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+# Build outputs
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
 
-# User-specific files (MonoDevelop/Xamarin Studio)
-*.userprefs
+# User-specific files
+*.user
+*.suo
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# NuGet
+packages/
+*.nupkg
+
+# Test results
+TestResults/
+*.trx
+
+# Coverage
+coverage/
+*.coverage
+
+# Migrations (if not wanted, but usually kept)
+# Migrations/
+
+# Appsettings secrets
+appsettings.*.json
+
+# Database files
+*.db
+*.sqlite
+
+# Environment variables
+.env
 
 # Mono auto generated files
 mono_crash.*

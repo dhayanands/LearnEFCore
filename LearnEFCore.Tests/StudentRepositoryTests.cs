@@ -1,41 +1,44 @@
-using LearnEFCore.Core.Entities;
+using StudentEntity = LearnEFCore.Domain.Entities.Student;
+using LearnEFCore.Features.Student.Infrastructure;
 using LearnEFCore.Infrastructure.Data;
-using LearnEFCore.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
-using System.Linq;
 
 namespace LearnEFCore.Tests
 {
-    public class StudentRepositoryTests
+    public class StudentRepositoryTests : IDisposable
     {
-        private readonly DbContextOptions<AppDbContext> _options;
+        private readonly AppDbContext _context;
+        private readonly StudentRepository _repository;
 
         public StudentRepositoryTests()
         {
-            _options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
+            _context = new AppDbContext(options);
+            _repository = new StudentRepository(_context);
         }
 
         [Fact]
         public async Task GetAllStudentsAsync_ReturnsAllStudents()
         {
             // Arrange
-            using var context = new AppDbContext(_options);
-            context.Students.AddRange(
-                new Student { Name = "Test Student 1", Email = "test1@example.com", EnrollmentDate = DateTime.Now, Course = "Math" },
-                new Student { Name = "Test Student 2", Email = "test2@example.com", EnrollmentDate = DateTime.Now, Course = "Science" }
+            _context.Students.AddRange(
+                new StudentEntity { Name = "Test Student 1", Email = "test1@example.com", EnrollmentDate = DateTime.Now, Course = "Math" },
+                new StudentEntity { Name = "Test Student 2", Email = "test2@example.com", EnrollmentDate = DateTime.Now, Course = "Science" }
             );
-            await context.SaveChangesAsync();
-
-            var repository = new StudentRepository(context);
+            await _context.SaveChangesAsync();
 
             // Act
-            var students = await repository.GetAllStudentsAsync();
+            var students = await _repository.GetAllStudentsAsync();
 
             // Assert
             Assert.Equal(2, students.Count());
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
 }

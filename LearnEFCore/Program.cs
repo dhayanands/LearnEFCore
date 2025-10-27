@@ -1,9 +1,4 @@
-using LearnEFCore.Application.Interfaces;
-using LearnEFCore.Infrastructure.Data;
-using LearnEFCore.Infrastructure.Repositories;
-using LearnEFCore.Infrastructure.Services;
-using LearnEFCore.Infrastructure.Initialization;
-using Microsoft.EntityFrameworkCore;
+using LearnEFCore.Infrastructure.Extensions;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -17,52 +12,43 @@ builder.Host.UseSerilog();
 
 // Load environment-specific configuration
 var environment = builder.Environment.EnvironmentName;
-builder.Configuration.AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
- options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add Health Checks
+builder.Services.AddHealthChecks();
 
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IQuoteService, QuoteService>();
-builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
+// Register application services
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
 // Validate configuration
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrEmpty(connectionString))
-{
-    throw new InvalidOperationException("Database connection string 'DefaultConnection' is not configured.");
-}
+app.ValidateConfiguration();
 
 // Configure the HTTP request pipeline.
+app.UseGlobalExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
- using var scope = app.Services.CreateScope();
- var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-
- // Ensure the database exists and reset it in development
- await initializer.InitializeDevelopmentAsync(connectionString!);
+    app.InitializeDevelopmentDatabase();
 }
 else
 {
- using var scope = app.Services.CreateScope();
- var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-
- // Apply migrations in production
- initializer.ApplyMigrations();
+    app.ApplyProductionMigrations();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-// app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapGet("/", () => "Learning EF Core ;)");
+
+app.MapHealthChecks("/health");
 
 app.Run();

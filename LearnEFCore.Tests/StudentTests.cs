@@ -1,5 +1,4 @@
-using LearnEFCore.Core.Entities;
-using Xunit;
+using StudentEntity = LearnEFCore.Domain.Entities.Student;
 
 namespace LearnEFCore.Tests
 {
@@ -9,7 +8,7 @@ namespace LearnEFCore.Tests
         public void Student_ShouldHaveDefaultValues()
         {
             // Arrange & Act
-            var student = new Student();
+            var student = new StudentEntity();
 
             // Assert
             Assert.Equal(0, student.Id);
@@ -26,7 +25,7 @@ namespace LearnEFCore.Tests
             var enrollmentDate = new DateTime(2022, 9, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // Act
-            var student = new Student
+            var student = new StudentEntity
             {
                 Id = 1,
                 Name = "John Doe",

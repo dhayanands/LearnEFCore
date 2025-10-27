@@ -8,10 +8,9 @@ This project demonstrates the use of **Entity Framework Core (EF Core)** with a 
 
 The project is organized into the following layers:
 
-- **Core**: Contains the domain entities and business logic.
+- **Features**: Contains feature-specific controllers, services, and repositories.
+- **Infrastructure**: Contains the database context, middleware, and shared utilities.
 - **Application**: Contains interfaces and application-specific logic.
-- **Infrastructure**: Contains the database context and repository implementations.
-- **Presentation**: Contains the API controllers and user-facing components.
 
 ---
 
@@ -62,7 +61,7 @@ Migrations in EF Core are used to manage changes to the database schema. Below a
 
 When you make changes to your entity classes or `DbContext`, create a new migration to capture those changes:
 
-```bash
+ ```bash
 dotnet ef migrations add <MigrationName>
 ```
 

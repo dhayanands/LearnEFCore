@@ -22,7 +22,7 @@ namespace LearnEFCore.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LearnEFCore.Core.Entities.Student", b =>
+            modelBuilder.Entity("LearnEFCore.Domain.Entities.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
