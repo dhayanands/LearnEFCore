@@ -125,3 +125,10 @@ dotnet test
 
 - The `AppDbContext` class is configured to use PostgreSQL via the `UseNpgsql` method.
 - Ensure the `Npgsql.EntityFrameworkCore.PostgreSQL` package is installed in the project.
+
+## Learning Resources
+
+- **[Learning Notes](Learning.md)**: Detailed explanations of concepts like `IDispatcher`, CQRS, EF Core, DTOs, and the students endpoint flow.
+- **[Architecture Diagrams](ArchitectureDiagram.md)**: Mermaid sequence diagrams showing the application flow for quotes and students endpoints.
+
+*These learning notes and diagrams were generated with the help of GitHub Copilot.*
