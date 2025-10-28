@@ -16,6 +16,9 @@ Instead of controllers directly calling services or repositories, they use `IDis
 - `Send<TCommand>(TCommand command)`: For commands that don't return data.
 - `Send<TCommand, TResponse>(TCommand command)`: For commands that return something (e.g., an ID).
 
+**Marker Interfaces**:
+- `ICommand`, `ICommand<TResponse>`, and `IQuery<TResponse>` are empty interfaces (no methods). They act as "tags" for type safety, ensuring only valid queries/commands are sent. They're used in handler constraints (e.g., `IQueryHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>`). Without them, the dispatcher couldn't reliably resolve handlers.
+
 ## 2. How IDispatcher Works Internally
 The concrete class `Dispatcher` implements `IDispatcher`.
 
