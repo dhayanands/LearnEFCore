@@ -2,7 +2,7 @@ using LearnEFCore.Application.Interfaces;
 
 namespace LearnEFCore.Features.Student.Commands
 {
-    public class DeleteStudentCommand : ICommand
+    public class DeleteStudentCommand : Command
     {
         public int Id { get; set; }
     }

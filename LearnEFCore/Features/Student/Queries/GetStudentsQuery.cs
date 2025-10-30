@@ -3,7 +3,7 @@ using LearnEFCore.Features.Student.DTOs;
 
 namespace LearnEFCore.Features.Student.Queries
 {
-    public class GetStudentsQuery : IQuery<List<StudentDto>>
+    public class GetStudentsQuery : Query<List<StudentDto>>
     {
     }
 }

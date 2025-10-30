@@ -12,12 +12,12 @@ Instead of controllers directly calling services or repositories, they use `IDis
 **Analogy**: Imagine a restaurant. The waiter (controller) tells the dispatcher (`IDispatcher`) "I need a pizza order." The dispatcher finds the right cook (handler) to make it, without the waiter knowing how the kitchen works.
 
 **Key methods in `IDispatcher`**:
-- `Send<TResponse>(IQuery<TResponse> query)`: For queries that return data.
-- `Send<TCommand>(TCommand command)`: For commands that don't return data.
-- `Send<TCommand, TResponse>(TCommand command)`: For commands that return something (e.g., an ID).
+- `Send<TResponse>(Query<TResponse> query)`: For queries that return data.
+- `Send<TCommand>(TCommand command)`: For commands that don't return data (where TCommand : Command).
+- `Send<TCommand, TResponse>(TCommand command)`: For commands that return something (e.g., an ID, where TCommand : Command<TResponse>).
 
-**Marker Interfaces**:
-- `ICommand`, `ICommand<TResponse>`, and `IQuery<TResponse>` are empty interfaces (no methods). They act as "tags" for type safety, ensuring only valid queries/commands are sent. They're used in handler constraints (e.g., `IQueryHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>`). Without them, the dispatcher couldn't reliably resolve handlers.
+**Abstract Base Classes**:
+- `Command`, `Command<TResponse>`, and `Query<TResponse>` are abstract base classes (no methods). They provide a base for inheritance, ensuring type safety for commands and queries. They're used in handler constraints (e.g., `IQueryHandler<TQuery, TResponse> where TQuery : Query<TResponse>`). This follows .NET design guidelines by avoiding marker interfaces.
 
 ## 2. How IDispatcher Works Internally
 The concrete class `Dispatcher` implements `IDispatcher`.
@@ -46,7 +46,7 @@ Let's walk through `GET /api/students` step-by-step, showing how `IDispatcher` o
 
 ### Controller Delegates to IDispatcher:
 - `StudentsController` has `IDispatcher` injected.
-- It creates a `GetStudentsQuery` (a simple class implementing `IQuery<List<StudentDto>>`).
+- It creates a `GetStudentsQuery` (a simple class inheriting from `Query<List<StudentDto>>`).
 - Calls `await _dispatcher.Send(new GetStudentsQuery())`.
 - **Why?** Controller focuses on HTTP (routing, responses), not business logic.
 

@@ -26,7 +26,7 @@ sequenceDiagram
 ## Explanation
 - **Client**: The external user or application making the HTTP request.
 - **Controller**: Handles routing and delegates the request to the dispatcher.
-- **IDispatcher**: Mediates by resolving and invoking the appropriate handler via dependency injection. Uses marker interfaces like `IQuery<TResponse>` and `ICommand` for type safety and handler routing.
+- **IDispatcher**: Mediates by resolving and invoking the appropriate handler via dependency injection. Uses abstract base classes like `Query<TResponse>` and `Command` for type safety and handler routing.
 - **Handler**: Processes the query and orchestrates business logic.
 - **Service**: Abstracts data access or external interactions.
 - **Database/External**: Represents data sources like files or databases.
